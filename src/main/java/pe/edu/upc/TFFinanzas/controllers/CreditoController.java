@@ -53,4 +53,10 @@ public class CreditoController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
+
+    // BUSCAR CREDITO POR ID
+    @PostMapping("/buscar")
+    public List<Credito> buscar(@RequestBody Credito crd){
+        return crdService.search(crd.getidCredito());
+    }
 }
