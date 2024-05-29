@@ -74,4 +74,10 @@ public class PagoService {
         }
         return new ResponseDTO("Pago no encontrado");
     }
+
+    //BUSCAR PAGO POR ID
+    public List<Pago> search(Long idPago) {
+        return pgoR.buscarPago(idPago);
+    }
+    
 }
