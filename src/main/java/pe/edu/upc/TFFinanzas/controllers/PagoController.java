@@ -55,9 +55,4 @@ public class PagoController {
         }
     }
 
-    //BUSCAR PAGO
-    @PostMapping("/buscar")
-    public List<Pago> buscar(@RequestBody Pago pgo){
-        return pagoService.search(pgo.getidPago());
-    }
 }
