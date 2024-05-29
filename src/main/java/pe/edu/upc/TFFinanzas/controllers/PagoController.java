@@ -54,4 +54,10 @@ public class PagoController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
+
+    //BUSCAR PAGO
+    @PostMapping("/buscar")
+    public List<Pago> buscar(@RequestBody Pago pgo){
+        return pagoService.search(pgo.getidPago());
+    }
 }
