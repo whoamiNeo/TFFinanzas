@@ -23,25 +23,22 @@ public class Credito {
     private Float monto;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
-    private  boolean estado;
+    private  Boolean estado;
     private  Integer cuotas;
+    
+    //enumeraciones 
+    @Enumerated(EnumType.STRING)
+    private TipoInteresEnum tipoInteres;
+    @Enumerated(EnumType.STRING)
+    private TipoCreditoEnum TipoCredito;
 
-    //RELACION credito-cliente
+    //*RELACION credito-cliente
     @ManyToOne
     @JoinColumn(name = "idCliente", nullable = false)
     private Cliente cliente;
 
-    //RELACION credito-tipoCredito
-    @ManyToOne
-    @JoinColumn(name = "idTipoCredito", nullable = false)
-    private TipoCredito tipoCredito;
-
-    //RELACION credito-tipoInteres
-    @ManyToOne
-    @JoinColumn(name = "idTipoInteres", nullable = false)
-    private TipoTasaInteres tipoTasaInteres;
-
-    //RELACION credito-ventaProducto
+    //*RELACION credito-pago
     @OneToMany(mappedBy = "credito", fetch = FetchType.LAZY)
     private List<Pago> pagos;
 }
+

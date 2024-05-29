@@ -1,5 +1,7 @@
 package pe.edu.upc.TFFinanzas.entities;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,14 +21,15 @@ public class DetalleVenta {
 
     private Integer cantidad;
     private Float precio;
+    private LocalDate fechaVenta;
 
     //Relacion detalleVenta - producto
     @ManyToOne
     @JoinColumn(name = "idProducto", nullable = false)
     private Producto producto;
-
-    //relacion detalleVenta - ventaProducto
+    //Relacion detalleVenta con cliente 
     @ManyToOne
-    @JoinColumn(name = "idVenta", nullable = false)
-    private VentaProducto ventaProducto;
+    @JoinColumn(name = "idCliente", nullable = false)
+    private Cliente cliente;
+
 }

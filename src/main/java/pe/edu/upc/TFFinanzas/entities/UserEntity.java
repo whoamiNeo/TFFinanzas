@@ -31,9 +31,10 @@ public class UserEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
 
-    //RELACION  DE USUARIO CON VENTA PRODUCTO
+    //RELACION  DE USUARIO CON CLIENTE
     @OneToMany(mappedBy = "users", fetch = FetchType.LAZY)
-    private List<VentaProducto> ventaProductos;
+    private List<Cliente> cliente;
+
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

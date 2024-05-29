@@ -18,7 +18,6 @@ public class TipoProducto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTipoProducto;
 
-    private String tipoProducto;
     private String descripcion;
 
     //Relacion tipoProducto - producto
