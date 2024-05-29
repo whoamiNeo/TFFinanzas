@@ -54,9 +54,4 @@ public class CreditoController {
         }
     }
 
-    // BUSCAR CREDITO POR ID
-    @PostMapping("/buscar")
-    public List<Credito> buscar(@RequestBody Credito crd){
-        return creditoService.search(crd.getidCredito());
-    }
 }
