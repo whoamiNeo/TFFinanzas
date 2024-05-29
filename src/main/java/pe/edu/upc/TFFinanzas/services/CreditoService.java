@@ -87,9 +87,5 @@ public class CreditoService {
         return new ResponseDTO("Crédito no encontrado");
     }
 
-    // BUSCAR CREDITO
-    public List<Credito> search(Long idCredito) {
-        return creditoRepository.buscarCreditoPorId(idCredito);
-    }
     
 }
