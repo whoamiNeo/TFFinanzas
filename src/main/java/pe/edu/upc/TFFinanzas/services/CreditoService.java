@@ -89,7 +89,7 @@ public class CreditoService {
 
     // BUSCAR CREDITO
     public List<Credito> search(Long idCredito) {
-        return creditoRepository.buscarCredito(idCredito);
+        return creditoRepository.buscarCreditoPorId(idCredito);
     }
     
 }
