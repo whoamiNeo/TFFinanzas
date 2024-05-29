@@ -13,5 +13,5 @@ import java.util.List;
 public interface CreditoRepository extends JpaRepository<Credito, Long>{
 
     @Query("from credito crd where crd.idCredito = :idCredito")
-    List<Credito> buscarCredito(@Param("idCredito") Long idCredito);
+    List<Credito> buscarCreditoPorId(@Param("idCredito") Long idCredito);
 } 
