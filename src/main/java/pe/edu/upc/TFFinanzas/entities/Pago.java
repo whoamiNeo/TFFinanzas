@@ -20,9 +20,13 @@ public class Pago {
 
     private Float monto;
     private LocalDate fechaPago;
-    private String tipoPago;
+    
+    //enumeracion de tipo de pago
+    @Enumerated(EnumType.STRING)
+    private TipoPagoEnum tipoPago;
+    
 
-    //relacion pago-credito
+    //*relacion pago-credito
     @ManyToOne
     @JoinColumn(name = "idCredito", nullable = false)
     private Credito credito;

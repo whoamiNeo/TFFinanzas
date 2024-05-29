@@ -20,8 +20,8 @@ public class Cliente{
     private String nombre;
     private String apellido;
     private String correo;
-    private String numeroDocumento;
-    private char telefono;
+    private Integer numeroDocumento;
+    private Integer telefono;
     private Float limiteCredito;
     private String direccion;
 
@@ -29,8 +29,12 @@ public class Cliente{
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
     private List<Credito> creditos;
 
-    //relacion CLIENTE CON VENTA
+    //relacion CLIENTE CON detalleVenta
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
-    private List<VentaProducto> ventas;
+    private List<DetalleVenta> detalleVentas;
 
+    // Relación CLIENTE con USUARIO
+    @ManyToOne
+    @JoinColumn(name = "id", nullable = false)
+    private UserEntity users;
 }
