@@ -77,7 +77,7 @@ public class PagoService {
 
     //BUSCAR PAGO POR ID
     public List<Pago> search(Long idPago) {
-        return pgoR.buscarPago(idPago);
+        return pagoRepository.buscarPago(idPago);
     }
     
 }
