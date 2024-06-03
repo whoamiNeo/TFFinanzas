@@ -126,9 +126,6 @@ public class CreditoService {
         }
     }
 
-    private double calcularMontoFinalConTasaEfectivaAnual(double montoInicial, double tasaEfectivaAnual, int diasCredito) {
-        return montoInicial * Math.pow(1 + tasaEfectivaAnual, diasCredito / 360.0);
-    }
 
     // FUNCIÓN PARA CALCULAR LOS DATOS
     private double[] calcularDatos(Credito credito) {
