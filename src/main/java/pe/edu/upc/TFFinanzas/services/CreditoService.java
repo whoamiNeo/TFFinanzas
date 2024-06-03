@@ -33,12 +33,13 @@ public class CreditoService {
     private double calcularMontoTotal(Credito credito) {
         if (credito.getTipoInteres() == TipoInteresEnum.CORTO_PLAZO && credito.getTipoCredito() == TipoCreditoEnum.NOMINAL) {
             long numeroQuincenas = ChronoUnit.DAYS.between(credito.getFechaInicio(), credito.getFechaFin()) / 15;
-            double montoTotal = credito.getMonto() * Math.pow((1 + TASA_INTERES_QUINCENAL_CORTO_PLAZO), numeroQuincenas);
+            double montoTotal = credito.getMonto() * Math.pow((1 + TASA_INTERES_QUINCENAL_CORTO_PLAZO), (numeroQuincenas/24));
+            montoInicial * Math.pow((1 + tasaInteres), numeroPeriodos);
             return montoTotal;
         } else if (credito.getTipoInteres() == TipoInteresEnum.LARGO_PLAZO && credito.getTipoCredito() == TipoCreditoEnum.NOMINAL) {
             long numeroMeses = ChronoUnit.MONTHS.between(credito.getFechaInicio(), credito.getFechaFin());
             double tasaInteresMensualLargoPlazo = Math.pow((1 + TASA_INTERES_ANUAL_LARGO_PLAZO), (1.0 / 12)) - 1;
-            double montoTotal = credito.getMonto() * Math.pow((1 + tasaInteresMensualLargoPlazo), numeroMeses);
+            double montoTotal = credito.getMonto() * Math.pow((1 + tasaInteresMensualLargoPlazo), (numeroMeses/12));
             return montoTotal;
         } else {
             throw new IllegalArgumentException("Tipo de interés no soportado");
@@ -96,28 +97,30 @@ public class CreditoService {
 
     //FUNCION PARA PASAR LA TASA NOMINAL A TASA EFECTIVA QUINCENAL
     private double calcularTasaEfectivaQuincenal() {
-        double tasaEfectivaQuincenal = Math.pow(1 + (TASA_INTERES_ANUAL_LARGO_PLAZO / 24), 1) - 1;
+        double tasaEfectivaQuincenal = (Math.pow(1 + (TASA_INTERES_ANUAL_LARGO_PLAZO / 24), 1) - 1)*100;
         return tasaEfectivaQuincenal;
     }
     //FUNCION PARA PASAR LA TASA NOMNIAL A TASA EFECTIVA ANUAL
     private double calcularTasaEfectivaAnual() {
-        double tasaEfectivaAnual = Math.pow(1 + (TASA_INTERES_ANUAL_LARGO_PLAZO / 12), 12) - 1;
+        double tasaEfectivaAnual = (Math.pow(1 + (TASA_INTERES_ANUAL_LARGO_PLAZO / 12), 12) - 1)*100;
         return tasaEfectivaAnual;
     }
     //FUNCION PARA PASAR DE TASA EFECTIVA ANUAL A TASA EFECTIVA MENSUAL
     private double calcularTasaEfectivaMensual() {
-        double tasaEfectivaMensual = Math.pow(1 + calcularTasaEfectivaAnual(), 30 / 360) - 1;
+        double tasaEfectivaMensual = (Math.pow(1 + (calcularTasaEfectivaAnual()/100), 30 / 360) - 1)*100;
         return tasaEfectivaMensual;
     }
 
     //FUNCION QUE DEVUELVE UN ARREGLO CON EL MONTO TOTAL, INTERES A PAGAR, NUMERO DE CUOTAS, Monto A PAGAR X MES
-    //TIPO 1 PARA TASA SIMPLE - TIPO 2 PARA TASA NOMINAL - TIPO 3 PARA TASA EFECTIVA
+    //TIPO 1 PARA TASA SIMPLE - TIPO 2 PARA TASA NOMINAL CREDITO CORTO - TIPO 3 PARA TASA NOMINAL CREDITO LARGO -
+    // TIPO 4 PARA TASA EFECTIVA x PERIODO CORTO -  TIPO 5 PARA TASA EFECTIVA x PERIODO LARGO
     private double[] calcularInteresCompuesto(double montoInicial, double tasaInteres, int numeroPeriodos, int tipo, long dias) {
         double montoTotal;
         double interesPagado;
         long numeroCuotas;
         long numeroDias=dias;
         double montoXMes;
+        double montoXQuincena;
 
         if(tipo == 1) {
             montoTotal = montoInicial * (1+ tasaInteres*(numeroDias/360));
@@ -127,18 +130,33 @@ public class CreditoService {
             return new double[]{montoTotal, interesPagado, numeroCuotas, montoXMes};
         }
         else if(tipo == 2) {
-            montoTotal = montoInicial * Math.pow((1 + tasaInteres), numeroPeriodos);
+            montoTotal = montoInicial * Math.pow((1 + tasaInteres), (numeroPeriodos/24));
             interesPagado = montoTotal - montoInicial;
             numeroCuotas = numeroPeriodos;
-            double tasaNominalMensual = 1 * (Math.pow(1 + calcularTasaEfectivaAnual(), 1 / 12) - 1);
-            montoXMes  = montoInicial * tasaNominalMensual / (1 - Math.pow(1 + tasaNominalMensual, -numeroPeriodos));
+            double tasaNominalQuincenal = (1 * (Math.pow(1 + (calcularTasaEfectivaAnual()/100), 1 / 24) - 1)*100);
+            montoXQuincena  = montoInicial * (tasaNominalQuincenal/100) / (1 - Math.pow(1 + (tasaNominalQuincenal/100), -numeroPeriodos));
+            return new double[]{montoTotal, interesPagado, numeroCuotas, montoXQuincena};
+        }
+        else if(tipo == 3) {
+            montoTotal = montoInicial * Math.pow((1 + tasaInteres), (numeroPeriodos/12));
+            interesPagado = montoTotal - montoInicial;
+            numeroCuotas = numeroPeriodos;
+            double tasaNominalMensual = (1 * (Math.pow(1 + (calcularTasaEfectivaAnual()/100), 1 / 12) - 1)*100);
+            montoXMes  = montoInicial * (tasaNominalMensual/100) / (1 - Math.pow(1 + (tasaNominalMensual/100), -numeroPeriodos));
             return new double[]{montoTotal, interesPagado, numeroCuotas, montoXMes};
         }
-        else {
-            montoTotal = montoInicial * Math.pow(1 + calcularTasaEfectivaAnual(), numeroDias / 360.0);
+        else if(tipo == 4) {
+            montoTotal = montoInicial * Math.pow(1 + (calcularTasaEfectivaAnual()/100), numeroDias / 360.0);
             interesPagado = montoTotal - montoInicial;
             numeroCuotas = numeroPeriodos;
-            montoXMes = montoInicial * calcularTasaEfectivaMensual() / (1 - Math.pow(1 + calcularTasaEfectivaMensual(), -numeroPeriodos));
+            montoXQuincena  = montoInicial * (calcularTasaEfectivaQuincenal()/100) / (1 - Math.pow(1 + (calcularTasaEfectivaQuincenal()/100), -numeroPeriodos));
+            return new double[]{montoTotal, interesPagado, numeroCuotas, montoXQuincena};
+        }
+        else {
+            montoTotal = montoInicial * Math.pow(1 + (calcularTasaEfectivaAnual()/100), numeroDias / 360.0);
+            interesPagado = montoTotal - montoInicial;
+            numeroCuotas = numeroPeriodos;
+            montoXMes = montoInicial * (calcularTasaEfectivaMensual()/100) / (1 - Math.pow(1 + (calcularTasaEfectivaMensual()/100), -numeroPeriodos));
             return new double[]{montoTotal, interesPagado, numeroCuotas, montoXMes};
         }
     }
@@ -165,18 +183,18 @@ public class CreditoService {
         else if (credito.getTipoInteres() == TipoInteresEnum.LARGO_PLAZO && credito.getTipoCredito() == TipoCreditoEnum.NOMINAL) {
             long numeroMeses = ChronoUnit.MONTHS.between(credito.getFechaInicio(), credito.getFechaFin());
             long numeroDias = ChronoUnit.DAYS.between(credito.getFechaInicio(), credito.getFechaFin());
-            return calcularInteresCompuesto(credito.getMonto(), TASA_INTERES_ANUAL_LARGO_PLAZO, (int) numeroMeses, 2, numeroDias);
+            return calcularInteresCompuesto(credito.getMonto(), TASA_INTERES_ANUAL_LARGO_PLAZO, (int) numeroMeses, 3, numeroDias);
         }
         else if (credito.getTipoInteres() == TipoInteresEnum.CORTO_PLAZO && credito.getTipoCredito() == TipoCreditoEnum.EFECTIVO) {
             long numeroQuincenas = ChronoUnit.DAYS.between(credito.getFechaInicio(), credito.getFechaFin()) / 14;
             long numeroDias = ChronoUnit.DAYS.between(credito.getFechaInicio(), credito.getFechaFin());
-            return calcularInteresCompuesto(credito.getMonto(), calcularTasaEfectivaAnual(), (int) numeroQuincenas, 3, numeroDias);
+            return calcularInteresCompuesto(credito.getMonto(), calcularTasaEfectivaAnual(), (int) numeroQuincenas, 4, numeroDias);
         }
         else if (credito.getTipoInteres() == TipoInteresEnum.LARGO_PLAZO && credito.getTipoCredito() == TipoCreditoEnum.EFECTIVO) {
             long numeroMeses = ChronoUnit.MONTHS.between(credito.getFechaInicio(), credito.getFechaFin());
             long numeroDias = ChronoUnit.DAYS.between(credito.getFechaInicio(), credito.getFechaFin());
             double tasaEfectivaAnual = calcularTasaEfectivaAnual();
-            return calcularInteresCompuesto(credito.getMonto(), tasaEfectivaAnual, (int) numeroMeses, 3, numeroDias);
+            return calcularInteresCompuesto(credito.getMonto(), tasaEfectivaAnual, (int) numeroMeses, 5, numeroDias);
         }
         else {
             throw new IllegalArgumentException("Tipo de interés no soportado");
@@ -257,3 +275,4 @@ public class CreditoService {
         return new ResponseDTO("Crédito no encontrado");
     }
 }
+
