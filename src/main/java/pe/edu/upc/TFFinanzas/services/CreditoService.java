@@ -164,7 +164,7 @@ public class CreditoService {
 
     // FUNCIÓN PARA CALCULAR LOS DATOS
     private double[] calcularDatos(Credito credito) {
-        int tipo; //1=tasa nominal //2=tasa efectiva
+        int tipo; 
         if (credito.getTipoInteres() == TipoInteresEnum.CORTO_PLAZO && credito.getTipoCredito() == TipoCreditoEnum.SIMPLE) {
             long numeroQuincenas = ChronoUnit.DAYS.between(credito.getFechaInicio(), credito.getFechaFin()) / 14;
             long numeroDias = ChronoUnit.DAYS.between(credito.getFechaInicio(), credito.getFechaFin());
