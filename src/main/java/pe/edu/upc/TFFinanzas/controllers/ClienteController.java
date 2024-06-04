@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.TFFinanzas.dtos.ClienteDTO;
+import pe.edu.upc.TFFinanzas.dtos.ClienteMorososDTO;
 import pe.edu.upc.TFFinanzas.dtos.auth.ResponseDTO;
+import pe.edu.upc.TFFinanzas.entities.Cliente;
 import pe.edu.upc.TFFinanzas.services.ClienteService;
 
 @RestController
@@ -70,4 +72,22 @@ public class ClienteController {
             return new ResponseEntity<>(new ResponseDTO("Error al eliminar el cliente"), HttpStatus.BAD_REQUEST);
         }
     }
+
+    //Listar Clientes Morosos
+//    @PreAuthorize("hasRole('USER')")
+//    @GetMapping("/morosos")
+//    public ResponseEntity<List<ClienteMorososDTO>> obtenerClientesConCreditosInactivos() {
+//        List<ClienteMorososDTO> clientes = clienteService.obtenerClientesConCreditosInactivos();
+//        return ResponseEntity.ok(clientes);
+//    }
+
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/ListarClientesMorosos")
+    public ResponseEntity<List<ClienteMorososDTO>> obtenerClientesConCreditosInactivos() {
+        List<ClienteMorososDTO> clientes = clienteService.ListarClientesMorosos();
+        return ResponseEntity.ok(clientes);
+    }
+
+
 }

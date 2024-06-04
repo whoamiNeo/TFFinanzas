@@ -2,12 +2,16 @@ package pe.edu.upc.TFFinanzas.services;
 
 import lombok.RequiredArgsConstructor;
 import pe.edu.upc.TFFinanzas.dtos.ClienteDTO;
+import pe.edu.upc.TFFinanzas.dtos.ClienteMorososDTO;
 import pe.edu.upc.TFFinanzas.dtos.auth.ResponseDTO;
 import pe.edu.upc.TFFinanzas.entities.Cliente;
+import pe.edu.upc.TFFinanzas.entities.Credito;
 import pe.edu.upc.TFFinanzas.entities.UserEntity;
 import pe.edu.upc.TFFinanzas.repositories.ClienteRespositoy;
 import pe.edu.upc.TFFinanzas.repositories.UserRepository;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +24,11 @@ import org.springframework.stereotype.Service;
 public class ClienteService {
     private final ClienteRespositoy clienteRespositoy;
     private final UserRepository userRepository;
+
+    private static final float INTERES_SIMPLE = 0.011f;
+
+
+
 
     /// REGISTRAR CLIENTE
     public ResponseDTO registrarCliente(ClienteDTO clienteDTO) {
@@ -84,6 +93,88 @@ public class ClienteService {
                         cliente.getUsers().getId()))
                         
                 .collect(Collectors.toList());
+    }
+
+
+
+    // Clientes Morosos
+
+//    public List<ClienteMorososDTO> obtenerClientesConCreditosInactivos() {
+//        return clienteRespositoy.findClientesMorosos();
+//    }
+
+
+//    public List<ClienteMorososDTO> obtenerClientesConCreditosInactivos() {
+//        List<Object[]> resultados = clienteRespositoy.ObtenerClientesMorosos();
+//
+//        return resultados.stream().map(obj -> {
+//            Long idCliente = ((Number) obj[0]).longValue();
+//            String nombre = (String) obj[1];
+//            String apellido = (String) obj[2];
+//            Boolean estadoCredito = (Boolean) obj[3];
+//            Float monto = ((Number) obj[4]).floatValue();
+//            LocalDate fechaFin = ((java.sql.Date) obj[5]).toLocalDate();
+//
+//            long diasEntreInicioFin = Duration.between(fechaFin.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+//            Float interesInicioFin = monto * 0.001f * diasEntreInicioFin;
+//            Float montoIncioFin = monto + interesInicioFin;
+//
+//            long diasEntre = Duration.between(fechaFin.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+//            Float interes = montoIncioFin * 0.001f * diasEntre;
+//            Float mora = montoIncioFin + interes;
+//
+////            long diasEntre = Duration.between(fechaFin.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+////            Float interes = monto * 0.001f * diasEntre;
+////            Float mora = monto + interes;
+//
+//            return new ClienteMorososDTO(idCliente, nombre, apellido, estadoCredito, mora);
+//        }).collect(Collectors.toList());
+//    }
+
+    public List<ClienteMorososDTO> ListarClientesMorosos() {
+        List<Object[]> resultados = clienteRespositoy.findClientesConCreditoInactivo();
+
+        return resultados.stream().map(obj -> {
+            Long idCliente = ((Number) obj[0]).longValue();
+            String nombre = (String) obj[1];
+            String apellido = (String) obj[2];
+            Boolean estadoCredito = (Boolean) obj[3];
+            Float monto = ((Number) obj[4]).floatValue();
+            LocalDate fechaInicio = ((java.sql.Date) obj[5]).toLocalDate();
+            LocalDate fechaFin = ((java.sql.Date) obj[6]).toLocalDate();
+            String tipoCredito = (String) obj[7];
+
+            // Cálculo de los intereses entre fechaInicio y fechaFin
+            long diasEntreInicioYFin = Duration.between(fechaInicio.atStartOfDay(), fechaFin.atStartOfDay()).toDays();
+            Float interesesInicioFin;
+
+            switch (tipoCredito) {
+                case "SIMPLE":
+                    interesesInicioFin = monto * 0.001f * diasEntreInicioYFin;
+                    break;
+                case "NOMINAL":
+                    interesesInicioFin = monto * 0.002f * diasEntreInicioYFin;
+                    break;
+                case "EFECTIVA":
+                    interesesInicioFin = monto * 0.003f * diasEntreInicioYFin;
+                    break;
+                case "ANUALIDAD_SIMPLE":
+                    interesesInicioFin = monto * 0.004f * diasEntreInicioYFin;
+                    break;
+                default:
+                    interesesInicioFin = 0f;
+            }
+
+            Float montoTotal = monto + interesesInicioFin;
+
+            // Cálculo de los intereses entre fechaFin y la fecha actual
+            long diasEntreFinYActual = Duration.between(fechaFin.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
+            Float interesesFinActual = montoTotal * 0.001f * diasEntreFinYActual;
+
+            Float mora = montoTotal + interesesFinActual;
+
+            return new ClienteMorososDTO(idCliente, nombre, apellido, estadoCredito, mora, tipoCredito);
+        }).collect(Collectors.toList());
     }
 
     /// BUSCAR CLIENTE POR NOMBRE
