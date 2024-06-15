@@ -2,6 +2,8 @@ package pe.edu.upc.TFFinanzas.dtos;
 
 import java.time.LocalDate;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,17 +17,18 @@ import pe.edu.upc.TFFinanzas.entities.TipoInteresEnum;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreditoTDO {
+public class CretidoLargoPlazoDTO {
     private Long idCredito;
-    //Monto es el monto total que el cliente llevando en productos, que se calculó en la entidad detalle venta 
+    //Monto total a pagar
     private Float monto;
+    private Float renta;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
+    private List<LocalDate> fechasDePago;
     private Boolean estado;
+    private NumeroDiasCuotaEnum numeroDiasCuota;
+    private PlazoGraciaEnum plazoGracia;
     private TipoCreditoEnum tipoCredito;
     private TipoInteresEnum tipoInteres;
-    private PlazoGraciaEnum plazoGracia;
-    private NumeroDiasCuotaEnum numeroDiasCuota;
     private Long idCliente;
-    
 }

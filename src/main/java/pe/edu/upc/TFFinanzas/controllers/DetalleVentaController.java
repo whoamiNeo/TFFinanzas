@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import pe.edu.upc.TFFinanzas.dtos.DetalleVentaDTO;
+import pe.edu.upc.TFFinanzas.dtos.MontoTotalDetalleVentaDTO;
 import pe.edu.upc.TFFinanzas.services.DetalleVentaService;
 import pe.edu.upc.TFFinanzas.dtos.auth.ResponseDTO;
 
@@ -36,11 +37,22 @@ public class DetalleVentaController {
             return new ResponseEntity<>(new ResponseDTO("Error al actualizar Detalle de Venta"), HttpStatus.NOT_FOUND);
         }
     }
-    //LISTAR TODAS LAS VENTAS
+    
+    //LISTAR DETALLE VENTA POR ID DE CIENTE ASOCIADO A UN USUARIO
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/listar/{id}")
+    public ResponseEntity<?> listarDetalleVentaPorCliente(@PathVariable Long id) {
+        try {
+            return new ResponseEntity<>(detalleVentaService.listarDetallesVentaPorCliente(id), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ResponseDTO("Detalle de venta no encontrado"), HttpStatus.NOT_FOUND);
+        }
+    }
+    //LISTAR TODAS LOS DETALLE VENTA REGISTRADOS 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/listar")
-    public ResponseEntity<List<DetalleVentaDTO>> listarTodosLosDetallesVenta() {
-        List<DetalleVentaDTO> detallesVenta = detalleVentaService.listarTodosLosDetallesVenta();
+    public ResponseEntity<List<MontoTotalDetalleVentaDTO>> listarTodosLosDetallesVenta() {
+        List<MontoTotalDetalleVentaDTO> detallesVenta = detalleVentaService.listarTodosLosDetallesVenta();
         return new ResponseEntity<>(detallesVenta, HttpStatus.OK);
     }
     //!VERIFICAR SI ESTO ENTRA O NO COMO CONSULTA

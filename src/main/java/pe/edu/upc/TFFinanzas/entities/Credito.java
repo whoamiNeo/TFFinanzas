@@ -24,13 +24,22 @@ public class Credito {
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private  Boolean estado;
-    private  Integer cuotas;
-    
-    //enumeraciones 
-    @Enumerated(EnumType.STRING)
-    private TipoInteresEnum tipoInteres;
+    //ENUMERACIONES
+    //TIPO DE CREDITO (corto y largo plazo)
     @Enumerated(EnumType.STRING)
     private TipoCreditoEnum TipoCredito;
+    //TIPO DE INTERES (efectivo, nominal, anualidad simple)
+    @Enumerated(EnumType.STRING)
+    private TipoInteresEnum tipoInteres;
+    //NUMERO DE PERIODOS POR PLAZO DE GRACIA
+    @Enumerated(EnumType.STRING)
+    private PlazoGraciaEnum plazoGracia;
+    //NUMERO DE DIAS POR PERIODO DE PAGO
+    @Enumerated(EnumType.STRING)
+    private  NumeroDiasCuotaEnum numeroDiasCuota;
+
+
+    
 
     //*RELACION credito-cliente
     @ManyToOne
@@ -38,7 +47,7 @@ public class Credito {
     private Cliente cliente;
 
     //*RELACION credito-pago
-    @OneToMany(mappedBy = "credito", fetch = FetchType.LAZY)
-    private List<Pago> pagos;
+    @OneToMany(mappedBy = "credito", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<DetalleCredito> detalleCreditos;
 }
 

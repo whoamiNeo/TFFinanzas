@@ -15,34 +15,34 @@ import java.util.List;
 public class PagoController {
     private final PagoService pagoService;
 
-    // Registrar Pago
-    @PostMapping("/registrar")
-    public ResponseEntity<ResponseDTO> registrarPago(@RequestBody PagoDTO pagoDTO) {
-        ResponseDTO response = pagoService.registrarPago(pagoDTO);
-        if (response.getMessage().equals("Pago registrado correctamente")) {
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-    }
+    // // Registrar Pago
+    // @PostMapping("/registrar")
+    // public ResponseEntity<ResponseDTO> registrarPago(@RequestBody PagoDTO pagoDTO) {
+    //     ResponseDTO response = pagoService.registrarPago(pagoDTO);
+    //     if (response.getMessage().equals("Pago registrado correctamente")) {
+    //         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    //     } else {
+    //         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    //     }
+    // }
 
     // Actualizar Pago
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<ResponseDTO> actualizarPago(@PathVariable Long id, @RequestBody PagoDTO pagoDTO) {
-        ResponseDTO response = pagoService.actualizarPago(id, pagoDTO);
-        if (response.getMessage().equals("Pago actualizado correctamente")) {
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-    }
+    // @PutMapping("/actualizar/{id}")
+    // public ResponseEntity<ResponseDTO> actualizarPago(@PathVariable Long id, @RequestBody PagoDTO pagoDTO) {
+    //     ResponseDTO response = pagoService.actualizarPago(id, pagoDTO);
+    //     if (response.getMessage().equals("Pago actualizado correctamente")) {
+    //         return new ResponseEntity<>(response, HttpStatus.OK);
+    //     } else {
+    //         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    //     }
+    // }
 
-    // Listar Todos los Pagos
-    @GetMapping("/listar")
-    public ResponseEntity<List<PagoDTO>> listarPagos() {
-        List<PagoDTO> pagos = pagoService.listarPagos();
-        return new ResponseEntity<>(pagos, HttpStatus.OK);
-    }
+    // //Listar Todos los Pagos
+    // @GetMapping("/listarPorCredito/{idCredito}")
+    // public ResponseEntity<List<PagoDTO>> listarPagosPorCredito(@PathVariable Long idCredito) {
+    //     List<PagoDTO> pagos = pagoService.listarPagosPorCredito(idCredito);
+    //     return new ResponseEntity<>(pagos, HttpStatus.OK);
+    // }
 
     // Eliminar Pago
     @DeleteMapping("/eliminar/{id}")

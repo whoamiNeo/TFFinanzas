@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import pe.edu.upc.TFFinanzas.dtos.ClienteDTO;
 import pe.edu.upc.TFFinanzas.dtos.auth.ResponseDTO;
 import pe.edu.upc.TFFinanzas.entities.Cliente;
-import pe.edu.upc.TFFinanzas.entities.UserEntity;
 import pe.edu.upc.TFFinanzas.repositories.ClienteRespositoy;
 import pe.edu.upc.TFFinanzas.repositories.UserRepository;
+
 
 import java.util.Optional;
 import java.util.List;
@@ -23,24 +23,27 @@ public class ClienteService {
 
     /// REGISTRAR CLIENTE
     public ResponseDTO registrarCliente(ClienteDTO clienteDTO) {
-        Optional<UserEntity> userExistente = userRepository.findById(clienteDTO.getIdUsuario());
         if(!userRepository.findById(clienteDTO.getIdUsuario()).isPresent()){
             return new ResponseDTO("Usuario no encontrado");
         }
-        UserEntity objtUser=userExistente.get();
-        //registrar cliente
-        Cliente objEntity = new Cliente();
-        objEntity.setNombre(clienteDTO.getNombre());
-        objEntity.setApellido(clienteDTO.getApellido());
-        objEntity.setCorreo(clienteDTO.getCorreo());
-        objEntity.setNumeroDocumento(clienteDTO.getNumeroDocumento());
-        objEntity.setTelefono(clienteDTO.getTelefono());
-        objEntity.setLimiteCredito(clienteDTO.getLimiteCredito());
-        objEntity.setDireccion(clienteDTO.getDireccion());
-        objEntity.setUsers(objtUser);
-        clienteRespositoy.save(objEntity);
-        return new ResponseDTO("Cliente registrado correctamente");        
+        if (clienteRespositoy.findByNumeroDocumento(clienteDTO.getNumeroDocumento()).isPresent()) {
+            return new ResponseDTO("El cliente ya esta registrado");
+        }
+        
+        Cliente cliente= Cliente.builder()
+                .nombre(clienteDTO.getNombre())
+                .apellido(clienteDTO.getApellido())
+                .correo(clienteDTO.getCorreo())
+                .numeroDocumento(clienteDTO.getNumeroDocumento())
+                .telefono(clienteDTO.getTelefono())
+                .limiteCredito(clienteDTO.getLimiteCredito())
+                .direccion(clienteDTO.getDireccion())
+                .users(userRepository.findById(clienteDTO.getIdUsuario()).get())
+                .build();
+        clienteRespositoy.save(cliente);
+        return new ResponseDTO("Cliente registrado correctamente");
     }
+
     /// ACTUALIZAR CLIENTE
     public ResponseDTO actualizarCliente(Long idCliente, ClienteDTO clienteDTO){
         //verificar si existe el cliente
@@ -48,25 +51,31 @@ public class ClienteService {
         if(!clienteExistente.isPresent()){
             return new ResponseDTO("Cliente no encontrado");
         }
+        
         //verificar si existe el usuario
-        Optional<UserEntity> userExistente = userRepository.findById(clienteDTO.getIdUsuario());
         if(!userRepository.findById(clienteDTO.getIdUsuario()).isPresent()){
             return new ResponseDTO("Usuario no encontrado");
         }
+        
+        //verificar si existe un cliente con el mismo numero de documento
+        if (clienteRespositoy.findByNumeroDocumento(clienteDTO.getNumeroDocumento()).isPresent()) {
+            return new ResponseDTO("El cliente no se puede actualizar, ya existe un cliente con el mismo numero de documento");
+        }
+
         //obtener cliente y usuario
-        UserEntity objtUser=userExistente.get();
-        Cliente objEntity = clienteExistente.get();
-        //actualizar cliente
-        objEntity.setNombre(clienteDTO.getNombre());
-        objEntity.setApellido(clienteDTO.getApellido());
-        objEntity.setCorreo(clienteDTO.getCorreo());
-        objEntity.setNumeroDocumento(clienteDTO.getNumeroDocumento());
-        objEntity.setTelefono(clienteDTO.getTelefono());
-        objEntity.setLimiteCredito(clienteDTO.getLimiteCredito());
-        objEntity.setDireccion(clienteDTO.getDireccion());
-        objEntity.setUsers(objtUser);
-        clienteRespositoy.save(objEntity);
+        Cliente cliente=Cliente.builder()
+                .nombre(clienteDTO.getNombre())
+                .apellido(clienteDTO.getApellido())
+                .correo(clienteDTO.getCorreo())
+                .numeroDocumento(clienteDTO.getNumeroDocumento())
+                .telefono(clienteDTO.getTelefono())
+                .limiteCredito(clienteDTO.getLimiteCredito())
+                .direccion(clienteDTO.getDireccion())
+                .users(userRepository.findById(clienteDTO.getIdUsuario()).get())
+                .build();
+        clienteRespositoy.save(cliente);
         return new ResponseDTO("Cliente actualizado correctamente");
+        
     }
 
     /// LISTAR TODOS LOS CLIENTES
@@ -101,6 +110,7 @@ public class ClienteService {
                         cliente.getUsers().getId()))
                 .collect(Collectors.toList());
     }
+    
     ///ELIMINAR CLIENTE
     public ResponseDTO eliminarCliente(Long idCliente) {
         if(clienteRespositoy.existsById(idCliente)){

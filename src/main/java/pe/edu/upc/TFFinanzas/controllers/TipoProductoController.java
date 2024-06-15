@@ -55,7 +55,7 @@ public class TipoProductoController {
     }
 
     //BUSCAR POR TIPO PRODUCTO POR DESCRIPCION
-    ///CREO QUE ESTO ES INNCESARIO XD 
+    ///CREO QUE ESTO ES INNCESARIO 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/buscar/{descripcion}")
     public ResponseEntity<?> buscarTipoProductoPorDescripcion(@PathVariable String descripcion) {

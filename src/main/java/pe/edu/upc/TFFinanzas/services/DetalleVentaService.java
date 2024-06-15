@@ -3,6 +3,7 @@ package pe.edu.upc.TFFinanzas.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.edu.upc.TFFinanzas.dtos.DetalleVentaDTO;
+import pe.edu.upc.TFFinanzas.dtos.MontoTotalDetalleVentaDTO;
 import pe.edu.upc.TFFinanzas.entities.DetalleVenta;
 import pe.edu.upc.TFFinanzas.entities.Producto;
 import pe.edu.upc.TFFinanzas.entities.Cliente;
@@ -79,10 +80,18 @@ public class DetalleVentaService {
         return new ResponseDTO("Detalle de venta actualizado correctamente");
     }
 
-    // LISTAR TODOS LOS DETALLES DE VENTA
-    public List<DetalleVentaDTO> listarTodosLosDetallesVenta() {
-        List<DetalleVenta> detallesVenta = detalleVentaRepository.findAll();
-        return detallesVenta.stream()
+     //LISTAR DETALLE VENTA DE UN CLIENTES ASOCIADOS AL USUARIO QUE LE REGISTRÓ
+    // LISTAR DETALLES DE VENTA POR CLIENTE
+    // LISTAR DETALLES DE VENTA POR CLIENTE
+    public MontoTotalDetalleVentaDTO listarDetallesVentaPorCliente(Long idCliente) {
+        List<DetalleVenta> detallesVenta = detalleVentaRepository.findAll()
+                .stream()
+                .filter(detalleVenta -> detalleVenta.getCliente().getIdCliente().equals(idCliente))
+                .collect(Collectors.toList());
+
+        double montoTotal = calcularMontoTotal(idCliente);
+
+        List<DetalleVentaDTO> detallesVentaDTO = detallesVenta.stream()
                 .map(detalleVenta -> new DetalleVentaDTO(
                         detalleVenta.getIdDetalleVenta(),
                         detalleVenta.getCantidad(),
@@ -91,7 +100,30 @@ public class DetalleVentaService {
                         detalleVenta.getProducto().getIdProducto(),
                         detalleVenta.getCliente().getIdCliente()))
                 .collect(Collectors.toList());
+
+        return new MontoTotalDetalleVentaDTO(montoTotal, detallesVentaDTO);
     }
+    // LISTAR TODOS LOS DETALLES DE VENTA
+    public List<MontoTotalDetalleVentaDTO> listarTodosLosDetallesVenta() {
+        List<Cliente> clientes = clienteRepository.findAll();
+        return clientes.stream()
+                .map(cliente -> {
+                    double montoTotal = calcularMontoTotal(cliente.getIdCliente());
+                    List<DetalleVentaDTO> detallesVenta = detalleVentaRepository.findAll().stream()
+                            .filter(detalleVenta -> detalleVenta.getCliente().getIdCliente().equals(cliente.getIdCliente()))
+                            .map(detalleVenta -> new DetalleVentaDTO(
+                                    detalleVenta.getIdDetalleVenta(),
+                                    detalleVenta.getCantidad(),
+                                    detalleVenta.getPrecio(),
+                                    detalleVenta.getFechaVenta(),
+                                    detalleVenta.getProducto().getIdProducto(),
+                                    detalleVenta.getCliente().getIdCliente()))
+                            .collect(Collectors.toList());
+                    return new MontoTotalDetalleVentaDTO(montoTotal, detallesVenta);
+                })
+                .collect(Collectors.toList());
+    }
+
 
     // ELIMINAR DETALLE VENTA
     public ResponseDTO eliminarDetalleVenta(Long idDetalleVenta) {
@@ -101,7 +133,24 @@ public class DetalleVentaService {
         }
         return new ResponseDTO("Detalle de venta no encontrado");
     }
+
     // ?CONSULTAS PARA DETALLE DE VENTA
+    //* CALCULAMOS EL MONTO TOTAL DE LA VENTA O compra que realiza un cliente
+    // public double calcularMontoTotal(Long idCliente){
+    //     List<DetalleVenta> detallesVenta = detalleVentaRepository.findAll();
+    //     double montoTotal = 0;
+    //     for (DetalleVenta detalleVenta : detallesVenta) {
+    //         if (detalleVenta.getCliente().getIdCliente() == idCliente) {
+    //             montoTotal += detalleVenta.getPrecio() * detalleVenta.getCantidad();
+    //         }
+    //     }
+    //     return montoTotal;
+    // }
+    public Float calcularMontoTotal(Long idCliente) {
+        return detalleVentaRepository.calcularTotalComprasPorCliente(idCliente);
+    }
+    
+    
     //! BUSCAR DETALLE VENTA POR FECHA y ver quien compro y que productos compró
     
 }

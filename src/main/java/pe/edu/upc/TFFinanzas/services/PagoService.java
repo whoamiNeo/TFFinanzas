@@ -20,23 +20,23 @@ public class PagoService {
     private final PagoRespository pagoRepository;
     private final CreditoRepository creditoRepository;
 
-    // Registrar Pago
-    public ResponseDTO registrarPago(PagoDTO pagoDTO) {
-        Optional<Credito> creditoOpt = creditoRepository.findById(pagoDTO.getIdCredito());
-        if (!creditoOpt.isPresent()) {
-            return new ResponseDTO("Crédito no encontrado");
-        }
-        Credito credito = creditoOpt.get();
+    // // Registrar Pago
+    // public ResponseDTO registrarPago(PagoDTO pagoDTO) {
+    //     Optional<Credito> creditoOpt = creditoRepository.findById(pagoDTO.getIdCredito());
+    //     if (!creditoOpt.isPresent()) {
+    //         return new ResponseDTO("Crédito no encontrado");
+    //     }
+    //     Credito credito = creditoOpt.get();
 
-        Pago pago = new Pago();
-        pago.setMonto(pagoDTO.getMonto());
-        pago.setFechaPago(pagoDTO.getFechaPago());
-        pago.setTipoPago(pagoDTO.getTipoPago());
-        pago.setCredito(credito);
+    //     Pago pago = new Pago();
+    //     pago.setMonto(pagoDTO.getMonto());
+    //     pago.setFechaPago(pagoDTO.getFechaPago());
+    //     pago.setTipoPago(pagoDTO.getTipoPago());
+    //     pago.setCredito(credito);
 
-        pagoRepository.save(pago);
-        return new ResponseDTO("Pago registrado correctamente");
-    }
+    //     pagoRepository.save(pago);
+    //     return new ResponseDTO("Pago registrado correctamente");
+    // }
 
     // Actualizar Pago
     public ResponseDTO actualizarPago(Long idPago, PagoDTO pagoDTO) {
@@ -52,18 +52,18 @@ public class PagoService {
         return new ResponseDTO("Pago no encontrado");
     }
 
-    // Listar Todos los Pagos
-    public List<PagoDTO> listarPagos() {
-        List<Pago> pagos = pagoRepository.findAll();
-        return pagos.stream()
-        .map(pago -> new PagoDTO(
-            pago.getIdPago(),
-            pago.getMonto(),
-            pago.getFechaPago(),
-            pago.getTipoPago(),
-            pago.getCredito().getIdCredito()))
-        .collect(Collectors.toList());
-    }
+    // // Listar Todos los Pagos
+    // public List<PagoDTO> listarPagos() {
+    //     List<Pago> pagos = pagoRepository.findAll();
+    //     return pagos.stream()
+    //     .map(pago -> new PagoDTO(
+    //         pago.getIdPago(),
+    //         pago.getMonto(),
+    //         pago.getFechaPago(),
+    //         pago.getTipoPago(),
+    //         pago.getCredito().getIdCredito()))
+    //     .collect(Collectors.toList());
+    // }
 
     // Eliminar Pago
     public ResponseDTO eliminarPago(Long idPago) {
