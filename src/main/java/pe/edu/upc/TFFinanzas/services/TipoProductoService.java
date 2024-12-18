@@ -23,7 +23,7 @@ public class TipoProductoService {
                 .descripcion(tipoProductoDTO.getDescripcion())
                 .build();
         tipoProductoRepository.save(tipoProducto);
-        tipoProductoDTO.setIdTipoProducto(tipoProducto.getIdTipoProducto());
+        tipoProductoDTO.setId(tipoProducto.getIdTipoProducto());
         return new ResponseDTO("tipo producto registrado correctamente");
     }
 

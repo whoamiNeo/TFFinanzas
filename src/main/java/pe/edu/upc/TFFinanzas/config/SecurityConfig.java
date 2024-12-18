@@ -29,7 +29,7 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
         .authorizeHttpRequests(authRequest -> {
-            authRequest.requestMatchers("/auth/**").permitAll();
+            authRequest.requestMatchers("/auth/**", "/auth/buscar-por-username/*").permitAll();
             authRequest.anyRequest().authenticated();
         })
         .sessionManagement(sessionManager -> {

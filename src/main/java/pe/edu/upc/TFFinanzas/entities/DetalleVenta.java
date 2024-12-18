@@ -17,8 +17,7 @@ import lombok.NoArgsConstructor;
 public class DetalleVenta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idDetalleVenta;
-
+    private Long id;
     private Integer cantidad;
     private Float precio;
     private LocalDate fechaVenta;

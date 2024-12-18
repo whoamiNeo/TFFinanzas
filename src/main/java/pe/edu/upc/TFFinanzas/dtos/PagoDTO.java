@@ -16,5 +16,6 @@ public class PagoDTO {
     private Float monto;
     private LocalDate fechaPago;
     private TipoPagoEnum tipoPago;
-    private Long idCredito;
+    private boolean estadoPago;
+    private Long idDetalleCredito;
 }

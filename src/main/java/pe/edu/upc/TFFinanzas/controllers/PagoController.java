@@ -1,13 +1,15 @@
 package pe.edu.upc.TFFinanzas.controllers;
+
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.upc.TFFinanzas.dtos.PagoDTO;
-import pe.edu.upc.TFFinanzas.services.PagoService;
 import pe.edu.upc.TFFinanzas.dtos.auth.ResponseDTO;
-
-import java.util.List;
+import pe.edu.upc.TFFinanzas.services.PagoService;
 
 @RestController
 @RequestMapping("/pagos")
@@ -37,12 +39,13 @@ public class PagoController {
         }
     }
 
-    // Listar Todos los Pagos
+    // Listar Pagos
     @GetMapping("/listar")
     public ResponseEntity<List<PagoDTO>> listarPagos() {
         List<PagoDTO> pagos = pagoService.listarPagos();
         return new ResponseEntity<>(pagos, HttpStatus.OK);
     }
+
 
     // Eliminar Pago
     @DeleteMapping("/eliminar/{id}")
@@ -55,3 +58,4 @@ public class PagoController {
         }
     }
 }
+

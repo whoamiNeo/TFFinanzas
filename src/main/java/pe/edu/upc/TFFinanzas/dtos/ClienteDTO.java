@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ClienteDTO {
 
+    private Long id;
     private String nombre;
     private String apellido;
     private String correo;

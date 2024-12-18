@@ -66,6 +66,7 @@ public class ProductoService {
         List<Producto> productos = productoRespository.findAll();
         return productos.stream()
                 .map(producto -> new ProductoDTO(
+                        producto.getIdProducto(),
                         producto.getNombreProducto(),
                         producto.getDetalleProducto(),
                         producto.getPrecio(),
@@ -78,6 +79,7 @@ public class ProductoService {
         List<Producto> productos = productoRespository.findByNombreProducto(nombre);
         return productos.stream()
                 .map(producto -> new ProductoDTO(
+                        producto.getIdProducto(),
                         producto.getNombreProducto(),
                         producto.getDetalleProducto(),
                         producto.getPrecio(),

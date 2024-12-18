@@ -25,17 +25,6 @@ public class CreditoController {
         }
     }
 
-    // ACTUALIZAR CREDITO
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<ResponseDTO> actualizarCredito(@PathVariable Long id, @RequestBody CreditoTDO creditoDTO) {
-        ResponseDTO response = creditoService.actualizarCredito(id, creditoDTO);
-        if (response.getMessage().equals("Crédito actualizado correctamente")) {
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-    }
-    //LISTAR CREDITOS
     // LISTAR TODOS LOS CREDITOS
     @GetMapping("/listar")
     public ResponseEntity<List<CreditoTDO>> listarCreditos() {
@@ -43,7 +32,7 @@ public class CreditoController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-      // ELIMINAR CREDITO
+      //ELIMINAR CREDITO
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<ResponseDTO> eliminarCredito(@PathVariable Long id) {
         ResponseDTO response = creditoService.eliminarCredito(id);

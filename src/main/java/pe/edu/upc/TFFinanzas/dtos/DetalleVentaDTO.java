@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetalleVentaDTO {
-    private Long idDetalleVenta;
+    private Long id;
     private Integer cantidad;
     private Float precio;
     private LocalDate fechaVenta;

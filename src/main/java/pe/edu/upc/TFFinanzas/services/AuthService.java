@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import pe.edu.upc.TFFinanzas.dtos.UserDTO;
 import pe.edu.upc.TFFinanzas.dtos.auth.AuthRequestDTO;
 import pe.edu.upc.TFFinanzas.dtos.auth.AuthResponseDTO;
 import pe.edu.upc.TFFinanzas.dtos.auth.RegisterRequestDTO;
@@ -14,6 +15,10 @@ import pe.edu.upc.TFFinanzas.dtos.auth.ResponseDTO;
 import pe.edu.upc.TFFinanzas.entities.RoleEnum;
 import pe.edu.upc.TFFinanzas.entities.UserEntity;
 import pe.edu.upc.TFFinanzas.repositories.UserRepository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
@@ -53,5 +58,24 @@ public class AuthService {
         userRepository.save(user);
         String token = jwtService.genToken(user);
         return new AuthResponseDTO("Usuario creado correctamente.", token);
+    }
+
+    public Optional<UserEntity> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    public List<UserDTO> listAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private UserDTO convertToDTO(UserEntity user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setUsername(user.getUsername());
+        userDTO.setPassword(user.getPassword());
+        userDTO.setRole(user.getRole());
+        return userDTO;
     }
 }
